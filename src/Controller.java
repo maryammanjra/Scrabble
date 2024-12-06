@@ -1,7 +1,8 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serializable;
 
-public class Controller implements ActionListener {
+public class Controller implements ActionListener, Serializable {
     Game game;
     View view;
 
@@ -39,6 +40,16 @@ public class Controller implements ActionListener {
         }
         else if(e.getActionCommand() == "Redo"){
             game.redo();
+        }
+        else if(e.getActionCommand() == "Save"){
+            String fileName = view.getFileName();
+            game.serializeGame(fileName);
+        }
+        else if(e.getActionCommand() == "Load"){
+            String fileName = view.getFileName();
+            Game gameOne = Game.deserializeGame(fileName);
+            this.game = gameOne;
+            view.updateView(gameOne);
         }
     }
 }

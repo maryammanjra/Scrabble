@@ -1,8 +1,9 @@
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Board {
+public class Board implements Serializable {
     private Tile[][] tiles;
 
 
@@ -51,6 +52,10 @@ public class Board {
 
     public ArrayList<Move> buildWordHorizontally(ArrayList<Move> moves){
         Collections.sort(moves);
+        System.out.println("Moves passed in");
+        for(Move move: moves){
+            System.out.println(move);
+        }
         int currentRow = moves.get(0).getRow();
         int startColumn = moves.get(0).getCol();
         int endColumn = moves.get(moves.size()-1).getCol();
@@ -83,6 +88,10 @@ public class Board {
         }
 
         Collections.sort(newMoves);
+        System.out.println("New moves passed in");
+        for(Move move: newMoves){
+            System.out.println(move);
+        }
         return newMoves;
     }
 
@@ -92,6 +101,10 @@ public class Board {
         int startRow = moves.get(0).getRow();
         int endRow = moves.get(moves.size()-1).getRow();
         ArrayList<Move> newMoves = new ArrayList<>(moves);
+        System.out.println("Moves passed in");
+        for(Move move: moves){
+            System.out.println(move);
+        }
 
         while(startRow != endRow){
             boolean contains = false;
@@ -119,6 +132,10 @@ public class Board {
             endRow++;
         }
         Collections.sort(newMoves);
+        System.out.println("New moves passed in");
+        for(Move move: newMoves){
+            System.out.println(move);
+        }
         return newMoves;
     }
 
@@ -134,6 +151,24 @@ public class Board {
 
     public boolean checkAdjacentHorizontal(int row, int col){
         return (tiles[row][col - 1] != null || tiles[row][col+1] != null);
+    }
+
+    public Tile getTile(int row, int col){
+        return tiles[row][col];
+    }
+
+    public void printBoard(){
+        for(int i = 0; i < 15; i++){
+            for(int j = 0; j < 15; j++){
+                if(tiles[i][j] != null){
+                    System.out.print(tiles[i][j].getCharacter() + "|");
+                }
+                else{
+                    System.out.print(" |");
+                }
+            }
+            System.out.println();
+        }
     }
 
 }

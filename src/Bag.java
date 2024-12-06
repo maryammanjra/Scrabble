@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.util.Random;
 import java.util.HashMap;
 
-public class Bag {
+public class Bag implements Serializable {
     private HashMap<Tile, Integer> tileCounts;
     private Random randomTile;
 
@@ -100,10 +101,6 @@ public class Bag {
             return true;
         }
         return false;
-    }
-
-    public int getTileCount(Tile tile){
-        return tileCounts.get(tile);
     }
 
 }

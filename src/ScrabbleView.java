@@ -1,8 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.io.Serializable;
 
-public class ScrabbleView extends JFrame implements View{
+public class ScrabbleView extends JFrame implements View, Serializable {
     JButton[][] buttons;
     Game game;
     Controller controller;
@@ -13,7 +14,8 @@ public class ScrabbleView extends JFrame implements View{
     public ScrabbleView() throws IOException {
         super("Scrabble");
 
-        this.game = new Game(this);
+        this.game = new Game();
+        game.addView(this);
         this.controller = new Controller(game, this);
 
         buttons = new JButton[15][15];
@@ -166,6 +168,33 @@ public class ScrabbleView extends JFrame implements View{
             rackButtons[i].setText(" ");
             rackButtons[i].setActionCommand(" ");
         }
+    }
+
+    public String getFileName(){
+        String fileName = JOptionPane.showInputDialog(null,
+                "Please enter the file name: ", "Save game", JOptionPane.PLAIN_MESSAGE);
+        return fileName;
+    }
+
+    public void updateView(Game game){
+        Board newBoard = game.returnBoard();
+        this.game = game;
+        for(int i = 0; i < 15; i++){
+            for(int j = 0; j < 15; j++){
+                if(newBoard.getTile(i,j) == null){
+                    this.buttons[i][j].setText(" ");
+                    this.buttons[i][j].setActionCommand(i + "." + j);
+                    this.buttons[i][j].addActionListener(controller);
+                }
+                else{
+                    this.buttons[i][j].setText(""+newBoard.getTile(i,j).getCharacter());
+                    this.buttons[i][j].setActionCommand(" ");
+                }
+            }
+        }
+        this.updateRack(game.getCurrentPlayer().getRack());
+        this.scoreUpdated(game.getCurrentPlayer().getScore());
+        game.addView(this);
     }
 
     public static void main(String[] args) throws IOException {

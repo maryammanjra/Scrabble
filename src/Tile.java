@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class Tile {
+public class Tile implements Serializable {
     private int score;
     private char character;
 

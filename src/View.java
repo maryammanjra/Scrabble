@@ -5,4 +5,6 @@ public interface View {
     public void scoreUpdated(int score);
     public void removeTile(int row, int column);
     public void updateRack(Rack rack);
+    public String getFileName();
+    public void updateView(Game game);
 }

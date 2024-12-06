@@ -1,9 +1,10 @@
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Dictionary {
+public class Dictionary implements Serializable {
 
     private final ArrayList<String> validWords;
 

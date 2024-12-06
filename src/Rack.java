@@ -1,9 +1,10 @@
 import com.sun.tools.javac.Main;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class Rack {
+public class Rack implements Serializable {
 
     private ArrayList<Tile> rack;
     int playerID;

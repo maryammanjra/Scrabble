@@ -1,14 +1,13 @@
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
-import java.io.IOException;
 
-public class Game {
+public class Game implements Serializable {
     ArrayList<Player> players;
     Bag bag;
     Dictionary dictionary;
     Board board;
-    Scanner scanner;
     Verifier verifier;
 
 
@@ -23,19 +22,21 @@ public class Game {
     Player currentPlayer;
     int indexOfCurrentPlayer;
 
-    public Game(View v) throws IOException {
+    public Game() throws IOException {
         players = new ArrayList<>();
         bag = new Bag();
         board = new Board();
-        scanner = new Scanner(System.in);
         dictionary = new Dictionary();
         scorelessTurns = 0;
         views = new ArrayList<>();
-        views.add(v);
         tileToPlace = null;
         currentPlayersMoves = new ArrayList<>();
         addToScore = 0;
         adjacencyScores = 0;
+    }
+
+    public void addView(View v) {
+        views.add(v);
     }
 
     public void initializePlayer(int i, String playerName) {
@@ -258,9 +259,11 @@ public class Game {
         undoneMoves = new ArrayList<>();
         if(!currentPlayersMoves.isEmpty()){
            Move moveToUndo = currentPlayersMoves.get(currentPlayersMoves.size()-1);
+
            views.get(0).removeTile(moveToUndo.getRow(),moveToUndo.getCol());
            currentPlayer.getRack().returnToRack(board.removeTile(moveToUndo.getRow(),moveToUndo.getCol()));
            views.get(0).updateRack(currentPlayer.getRack());
+
            undoneMoves.add(moveToUndo);
            currentPlayersMoves.remove(moveToUndo);
         }
@@ -271,12 +274,53 @@ public class Game {
         if(!undoneMoves.isEmpty()){
             Move moveToRedo = undoneMoves.get(undoneMoves.size()-1);
             views.get(0).tilePlaced(moveToRedo.getRow(), moveToRedo.getCol(), moveToRedo.getC());
+
             currentPlayer.getRack().playTile(moveToRedo.getC());
             views.get(0).updateRack(currentPlayer.getRack());
             board.addTile(new Tile(moveToRedo.getC(), verifier.getTileScore(moveToRedo.getC())), moveToRedo.getRow(), moveToRedo.getCol());
+
             undoneMoves.remove(moveToRedo);
             currentPlayersMoves.add(moveToRedo);
         }
+    }
+
+    public void serializeGame(String fileName){
+        try{
+            FileOutputStream fileOutputStream = new FileOutputStream(fileName + ".txt");
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(this);
+            objectOutputStream.close();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static Game deserializeGame(String fileName){
+        try{
+            FileInputStream fileInputStream = new FileInputStream(fileName + ".txt");
+            ObjectInputStream objectInput = new ObjectInputStream(fileInputStream);
+            try{
+                Game reloadedGame = (Game)(objectInput.readObject());
+                objectInput.close();
+                return reloadedGame;
+            }
+            catch(ClassNotFoundException e){
+                e.printStackTrace();
+            }
+        }
+        catch(FileNotFoundException e){} catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+    public Player getCurrentPlayer(){
+        return currentPlayer;
+    }
+
+    public Board returnBoard(){
+        return board;
     }
 
 }

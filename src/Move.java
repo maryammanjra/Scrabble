@@ -1,9 +1,11 @@
-public class Move implements Comparable<Move> {
+import java.io.Serializable;
+
+public class Move implements Comparable<Move>, Serializable {
     private int row;
     private int col;
     private char c;
 
-    public Move(int row, int col, char c){
+    public Move(int row, int col, char c) {
         this.row = row;
         this.col = col;
         this.c = c;
