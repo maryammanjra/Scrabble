@@ -30,6 +30,15 @@ public class Move implements Comparable<Move> {
         }
     }
 
+    public boolean equals(Move m){
+        if(this.row == m.row && this.col == m.col){
+            if(c == m.c){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public String toString(){
         return this.row + "," + this.col + "," + this.c;
     }

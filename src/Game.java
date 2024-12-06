@@ -13,6 +13,7 @@ public class Game {
 
 
     int scorelessTurns;
+    int addToScore, adjacencyScores;
     ArrayList<View> views;
     ArrayList<Move> currentPlayersMoves;
 
@@ -32,6 +33,8 @@ public class Game {
         views.add(v);
         tileToPlace = null;
         currentPlayersMoves = new ArrayList<>();
+        addToScore = 0;
+        adjacencyScores = 0;
     }
 
     public void initializePlayer(int i, String playerName) {
@@ -55,7 +58,7 @@ public class Game {
         }
     }
 
-    //Not the nicest part of this, I'll change it later
+
     public void firstTurn() {
         board.firstTurn(tileToPlace, 7, 7);
 
@@ -77,15 +80,49 @@ public class Game {
     }
 
     public void playerSwitched() {
-        if(!currentPlayersMoves.isEmpty()){
-            Collections.sort(currentPlayersMoves);
-            ArrayList<Move> copyOfMoves = new ArrayList<>(currentPlayersMoves);
+        if(!currentPlayersMoves.isEmpty()) {
+            this.checkWords();
+        }
 
-            board.addMoves(currentPlayersMoves);
-            verifier = new Verifier(currentPlayersMoves);
+        indexOfCurrentPlayer = (indexOfCurrentPlayer + 1)  % players.size();
+        currentPlayer = players.get(indexOfCurrentPlayer);
+        addToScore = 0;
+        adjacencyScores = 0;
 
-            if(!verifier.verify(dictionary)){
-                for(Move move: copyOfMoves){
+        for (View view : views) {
+            view.newPlayer(currentPlayer.getRack(), currentPlayer.getScore());
+        }
+    }
+
+    public void checkWords(){
+        boolean isHorizontal = currentPlayersMoves.get(0).getRow() ==
+                currentPlayersMoves.get(currentPlayersMoves.size() - 1).getRow();
+        boolean isVertical = !isHorizontal;
+        boolean adjoiningInvalid = false;
+
+        if(currentPlayersMoves.size() > 1){
+            ArrayList<Move> fullWord;
+            if(isHorizontal){
+                fullWord = board.buildWordHorizontally(currentPlayersMoves);
+                for(Move move : currentPlayersMoves){
+                    if(!checkNeighboursVertical(move)){
+                        adjoiningInvalid = true;
+                    }
+                }
+            }
+            else{
+                fullWord = board.buildWordVertically(currentPlayersMoves);
+                for(Move move : currentPlayersMoves){
+                    if(!checkNeighboursHorizontal(move)){
+                        adjoiningInvalid = true;
+                    }
+                }
+            }
+
+            verifier = new Verifier(fullWord);
+
+            if(!verifier.verify(dictionary) || adjoiningInvalid){
+                for(Move move: currentPlayersMoves){
                     currentPlayer.getRack().returnToRack(board.removeTile(move.getRow(),move.getCol()));
                     for(View view: views){
                         view.removeTile(move.getRow(),move.getCol());
@@ -94,31 +131,128 @@ public class Game {
             }
 
             else{
-                for(int i = 0; i < copyOfMoves.size(); i++){
+                for(int i = 0; i < currentPlayersMoves.size(); i++){
                     if(!bag.bagEmpty()){
                         currentPlayer.getRack().addTile(bag);
                     }
                 }
+                int addToScore = verifier.computeScore() + adjacencyScores;
+                currentPlayer.addToScore(addToScore);
+                views.get(0).scoreUpdated(currentPlayer.getScore());
             }
-            currentPlayersMoves.clear();
-            copyOfMoves.clear();
         }
 
-        indexOfCurrentPlayer = indexOfCurrentPlayer + 1;
-
-
-        if (indexOfCurrentPlayer == players.size()) {
-            indexOfCurrentPlayer = 0;
+        else if(currentPlayersMoves.size() == 1){
+            this.processOneLetterPlacement();
+            currentPlayer.addToScore(adjacencyScores);
+            views.get(0).scoreUpdated(currentPlayer.getScore());
         }
 
-        currentPlayer = players.get(indexOfCurrentPlayer);
-
-        for (View view : views) {
-            view.newPlayer(currentPlayer.getRack(), currentPlayer.getScore());
-        }
-
+        currentPlayersMoves.clear();
     }
 
+    public void processOneLetterPlacement() {
+        boolean invalidOneLetter = false;
+        ArrayList<Move> horizontalWord = null;
+        ArrayList<Move> verticalWord = null;
+        int row = currentPlayersMoves.get(0).getRow();
+        int column = currentPlayersMoves.get(0).getCol();
+        Verifier verifierH;
+        Verifier verifierV;
 
+        if(board.checkAdjacentVertical(row, column) && board.checkAdjacentHorizontal(row, column)){
+            horizontalWord = board.buildWordHorizontally(currentPlayersMoves);
+            verticalWord = board.buildWordVertically(currentPlayersMoves);
+        }
+        else if(board.checkAdjacentHorizontal(row, column)){
+            horizontalWord = board.buildWordHorizontally(currentPlayersMoves);
+        }
+        else if(board.checkAdjacentVertical(row, column)){
+            verticalWord = board.buildWordVertically(currentPlayersMoves);
+        }
+
+        if(horizontalWord != null && verticalWord != null){
+            verifierH = new Verifier(horizontalWord);
+            verifierV = new Verifier(verticalWord);
+            if(!verifierH.verify(dictionary) || !verifierV.verify(dictionary)){
+                invalidOneLetter = true;
+            }
+            else{
+                adjacencyScores += verifierH.computeScore() + verifierV.computeScore();
+            }
+        }
+        else if(horizontalWord != null){
+            verifierH = new Verifier(horizontalWord);
+            if(!verifierH.verify(dictionary)){
+                invalidOneLetter = true;
+            }
+            else{
+                adjacencyScores += verifierH.computeScore();
+            }
+        }
+        else if(verticalWord != null){
+            verifierV = new Verifier(verticalWord);
+            if(!verifierV.verify(dictionary)){
+                invalidOneLetter = true;
+            }
+            else{
+                adjacencyScores += verifierV.computeScore();
+            }
+        }
+
+        if(invalidOneLetter){
+            currentPlayer.getRack().returnToRack(board.removeTile(row,column));
+            views.get(0).removeTile(row,column);
+        }
+        else{
+            currentPlayer.getRack().addTile(bag);
+        }
+    }
+
+    public boolean checkNeighboursVertical(Move move){
+       int row = move.getRow();
+       int col = move.getCol();
+
+       if(board.checkAdjacentVertical(row, col)){
+           ArrayList<Move> verticalWord = new ArrayList<>();
+           ArrayList<Move> builtWord;
+           verticalWord.add(move);
+           builtWord = board.buildWordVertically(verticalWord);
+           Verifier verifierV = new Verifier(builtWord);
+           if(!verifierV.verify(dictionary)){
+               return false;
+           }
+           else{
+               adjacencyScores += verifierV.computeScore();
+               return true;
+           }
+       }
+
+       else{
+           return true;
+       }
+    }
+
+    public boolean checkNeighboursHorizontal(Move move){
+        int row = move.getRow();
+        int col = move.getCol();
+        if(board.checkAdjacentHorizontal(row, col)){
+            ArrayList<Move> horizontalWord = new ArrayList<>();
+            ArrayList<Move> builtWord;
+            horizontalWord.add(move);
+            builtWord = board.buildWordHorizontally(horizontalWord);
+            Verifier verifierH = new Verifier(builtWord);
+            if(!verifierH.verify(dictionary)){
+                return false;
+            }
+            else{
+                adjacencyScores += verifierH.computeScore();
+                return true;
+            }
+        }
+        else{
+            return true;
+        }
+    }
 }
 

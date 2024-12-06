@@ -51,92 +51,95 @@ public class Board {
         }
     }
 
-    //Rn this adds the letters on the board before this players turn, this needs to be split into two functions
-    //one for vertical and one for horizontal because of the case where you put down a word horizontally but it
-    //touches multiple words vertically, or vice versa
-    public void addMoves(ArrayList<Move> moves) {
-        //Save the coordinates of the first tile the player placed, and the last tile the player placed
-        int startRow = moves.get(0).getRow();
-        int endRow = moves.get(moves.size() - 1).getRow();
+    public ArrayList<Move> buildWordHorizontally(ArrayList<Move> moves){
+        Collections.sort(moves);
+        int currentRow = moves.get(0).getRow();
         int startColumn = moves.get(0).getCol();
-        int endColumn = moves.get(moves.size() - 1).getCol();
+        int endColumn = moves.get(moves.size()-1).getCol();
+        ArrayList<Move> newMoves = new ArrayList<>(moves);
 
-        //If rows of first and last tile are equal the player placed a word horizontally, otherwise vertically
-        boolean isHorizontal = moves.get(0).getRow() == moves.get(moves.size() - 1).getRow();
-        boolean isVertical = !isHorizontal;
-
-        //If only one tile was placed, can't determine whether horizontal or vertical yet, so check both, this won't work atm ik why
-        if(moves.size() == 1){
-            isHorizontal = true;
-            isVertical = true;
-        }
-
-        //First if there are letters in between the players placed word add those letters to the word, you can get rid of this and
-        // just add it into the while loop that follows after temporary fix
-        if(isVertical){
-            while(startRow != endRow){
-                Move inBetween = new Move(startRow + 1, startColumn, tiles[startRow + 1][startColumn].getCharacter());
-                if(!moves.contains(inBetween)){
-                    moves.add(inBetween);
+        while(startColumn != endColumn){
+            boolean contains = false;
+            Move inBetween = new Move(currentRow, startColumn + 1, tiles[currentRow][startColumn + 1].getCharacter());
+            for(Move move: moves){
+                if(move.equals(inBetween)){
+                    contains = true;
                 }
-                startRow++;
             }
+            if(!contains){
+                newMoves.add(inBetween);
+                System.out.println("Move added " + inBetween.toString() +"\n" );
+            }
+            startColumn++;
         }
 
-        //Reset variable
+        startColumn = moves.get(0).getCol();
+
+        while ((startColumn - 1 != -1) && tiles[currentRow][startColumn - 1] != null) {
+            newMoves.add(new Move(currentRow, startColumn - 1, tiles[currentRow][startColumn - 1].getCharacter()));
+            startColumn--;
+        }
+        while ((endColumn + 1 != 15) && tiles[currentRow][endColumn + 1] != null) {
+            newMoves.add(new Move(currentRow, endColumn + 1, tiles[currentRow][endColumn + 1].getCharacter()));
+            endColumn++;
+        }
+
+        Collections.sort(newMoves);
+        return newMoves;
+    }
+
+    public ArrayList<Move> buildWordVertically(ArrayList<Move> moves){
+        Collections.sort(moves);
+        int currentColumn = moves.get(0).getCol();
+        int startRow = moves.get(0).getRow();
+        int endRow = moves.get(moves.size()-1).getRow();
+        ArrayList<Move> newMoves = new ArrayList<>(moves);
+
+        while(startRow != endRow){
+            boolean contains = false;
+            Move inBetween = new Move(startRow + 1, currentColumn, tiles[startRow+1][currentColumn].getCharacter());
+            for(Move move: moves){
+                if(move.equals(inBetween)){
+                    contains = true;
+                }
+            }
+            if(!contains){
+                newMoves.add(inBetween);
+            }
+
+            startRow++;
+        }
+
         startRow = moves.get(0).getRow();
 
-        //If there are letters in between the players placed word add those letters to the word
-        if(isHorizontal){
-            while(startColumn != endColumn){
-                System.out.println("Checking start column" + startColumn);
-                Move inBetween = new Move(startRow, startColumn + 1, tiles[startRow][startColumn + 1].getCharacter());
-                if(!moves.contains(inBetween)){
-                    moves.add(inBetween);
-                }
-                startColumn++;
-            }
+        while((startRow - 1 != -1) && tiles[startRow-1][currentColumn] != null) {
+            newMoves.add(new Move(startRow - 1, currentColumn, tiles[startRow-1][currentColumn].getCharacter()));
+            startRow--;
         }
-
-        //Reset variable
-        startColumn = moves.get(0).getCol();
-
-        //If the word was horizontal, and there are tiles to the right or to the left then add these tiles to
-        //the word and check the full word
-        if(isHorizontal){
-            while ((startColumn - 1 != -1) && tiles[startRow][startColumn - 1] != null) {
-                moves.add(new Move(startRow, startColumn - 1, tiles[startRow][startColumn - 1].getCharacter()));
-                startColumn--;
-            }
-            while ((endColumn + 1 != 15) && tiles[startRow][endColumn + 1] != null) {
-                moves.add(new Move(startRow, endColumn + 1, tiles[startRow][endColumn + 1].getCharacter()));
-                endColumn++;
-            }
+        while((endRow + 1 != 15) && tiles[endRow+1][currentColumn] != null) {
+            newMoves.add(new Move(endRow + 1, currentColumn, tiles[endRow+1][currentColumn].getCharacter()));
+            endRow++;
         }
-
-        //This needs to be reset for the one tile case, atm blegh
-        startColumn = moves.get(0).getCol();
-
-        //If the word was vertical, and there are tiles above or below, add these tiles to the word and check the full
-        //thing
-        if(isVertical) {
-            while((startRow - 1 != -1) && tiles[startRow-1][startColumn] != null) {
-                moves.add(new Move(startRow - 1, startColumn, tiles[startRow-1][startColumn].getCharacter()));
-                startRow--;
-            }
-            while((endRow + 1 != 15) && tiles[endRow+1][startColumn] != null) {
-                moves.add(new Move(endRow + 1, startColumn, tiles[endRow+1][startColumn].getCharacter()));
-                endRow++;
-            }
-        }
-        //Sort these tiles so that you can correctly verify the word in the order it appeared on the board
-        Collections.sort(moves);
+        Collections.sort(newMoves);
+        return newMoves;
     }
 
     public Tile removeTile(int row, int column){
         Tile tile = tiles[row][column];
         tiles[row][column] = null;
         return tile;
+    }
+
+    public boolean isEmpty(int row, int col){
+        return tiles[row][col] == null;
+    }
+
+    public boolean checkAdjacentVertical(int row, int col){
+        return (tiles[row - 1][col] != null || tiles[row + 1][col] != null);
+    }
+
+    public boolean checkAdjacentHorizontal(int row, int col){
+        return (tiles[row][col - 1] != null || tiles[row][col+1] != null);
     }
 
 }
