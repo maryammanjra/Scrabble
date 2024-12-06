@@ -11,8 +11,8 @@ import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
 import java.io.IOException;
 
-public class customBoardParser extends DefaultHandler implements Serializable {
-    private versionedBoard board;
+public class CustomBoardParser extends DefaultHandler implements Serializable {
+    private VersionedBoard board;
 
     private ArrayList<Coordinate> doubleScores;
     private ArrayList<Coordinate> tripleScores;
@@ -29,7 +29,7 @@ public class customBoardParser extends DefaultHandler implements Serializable {
     private SAXParser saxParser;
     File xmlFile;
 
-    public customBoardParser(String xmlFile) {
+    public CustomBoardParser(String xmlFile) {
         factory = SAXParserFactory.newInstance();
         try{
             saxParser = factory.newSAXParser();
@@ -132,8 +132,8 @@ public class customBoardParser extends DefaultHandler implements Serializable {
         }
     }
 
-    public versionedBoard getBoard(){
-        board = new versionedBoard(false);
+    public VersionedBoard getBoard(){
+        board = new VersionedBoard(false);
 
         board.initializeDoublesFromArray(doubleScores);
         board.initializeTriplesFromArray(tripleScores);

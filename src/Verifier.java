@@ -1,7 +1,6 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 
 public class Verifier implements Serializable {
@@ -83,7 +82,7 @@ public class Verifier implements Serializable {
         return score;
     }
 
-    public int computeScoreVersionedBoard(versionedBoard board){
+    public int computeScoreVersionedBoard(VersionedBoard board){
         int score = 0;
         for(Move move : checkMoves) {
             score += tileScores.get(move.getC()) * board.returnScore(move.getRow(), move.getCol());

@@ -7,5 +7,5 @@ public interface View {
     public void updateRack(Rack rack);
     public String getFileName();
     public void updateView(Game game);
-    public void setDoubleAndTriples(versionedBoard Board);
+    public void setDoubleAndTriples(VersionedBoard Board);
 }

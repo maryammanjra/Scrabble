@@ -5,7 +5,7 @@ public class Game implements Serializable {
     ArrayList<Player> players;
     Bag bag;
     Dictionary dictionary;
-    versionedBoard board;
+    VersionedBoard board;
     Verifier verifier;
 
 
@@ -23,7 +23,7 @@ public class Game implements Serializable {
     public Game() throws IOException {
         players = new ArrayList<>();
         bag = new Bag();
-        board = new versionedBoard(true);
+        board = new VersionedBoard(true);
         dictionary = new Dictionary();
         scorelessTurns = 0;
         views = new ArrayList<>();
@@ -35,7 +35,7 @@ public class Game implements Serializable {
 
     public void customBoard(){
         try{
-            customBoardParser customBoard = new customBoardParser("./resources/customBoard.xml");
+            CustomBoardParser customBoard = new CustomBoardParser("./resources/customBoard.xml");
             customBoard.importFromXML();
             board = customBoard.getBoard();
         }
@@ -333,7 +333,7 @@ public class Game implements Serializable {
         return currentPlayer;
     }
 
-    public versionedBoard returnBoard(){
+    public VersionedBoard returnBoard(){
         return board;
     }
 

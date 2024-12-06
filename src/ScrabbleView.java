@@ -180,7 +180,7 @@ public class ScrabbleView extends JFrame implements View, Serializable {
         return fileName;
     }
 
-    public void setDoubleAndTriples(versionedBoard board){
+    public void setDoubleAndTriples(VersionedBoard board){
         for(int i = 0; i < 15; i++){
             for(int j = 0; j < 15; j++){
                 if(board.returnScore(i, j) == 2){
@@ -203,7 +203,7 @@ public class ScrabbleView extends JFrame implements View, Serializable {
     }
 
     public void updateView(Game game){
-        versionedBoard newBoard = game.returnBoard();
+        VersionedBoard newBoard = game.returnBoard();
         this.game = game;
         for(int i = 0; i < 15; i++){
             for(int j = 0; j < 15; j++){
