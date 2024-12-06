@@ -1,8 +1,10 @@
-public class Coordinate {
+public class Coordinate implements Comparable<Coordinate> {
+
+
     int row;
     int col;
 
-    public Coordinate(int row, int col) {
+    public Coordinate(int row, int col){
         this.row = row;
         this.col = col;
     }
@@ -17,5 +19,13 @@ public class Coordinate {
 
     public String toString() {
         return "(" + row + ", " + col + ")";
+    }
+
+    public boolean equals(Coordinate o) {
+        return this.getRow() == o.getRow() && this.getCol() == o.getCol();
+    }
+
+    public int compareTo(Coordinate o) {
+        return this.getCol() - o.getCol() + this.getRow() - o.getRow();
     }
 }

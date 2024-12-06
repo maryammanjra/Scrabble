@@ -176,6 +176,25 @@ public class ScrabbleView extends JFrame implements View, Serializable {
         return fileName;
     }
 
+    public void setDoubleAndTriples(versionedBoard board){
+        for(int i = 0; i < 15; i++){
+            for(int j = 0; j < 15; j++){
+                if(board.returnScore(i, j) == 2){
+                    buttons[i][j].setText("DL");
+                }
+                else if(board.returnScore(i, j) == 3){
+                    buttons[i][j].setText("TL");
+                }
+                else if(board.doubleWord(i, j)){
+                    buttons[i][j].setText("DW");
+                }
+                else if(board.tripleWord(i, j)){
+                    buttons[i][j].setText("TW");
+                }
+            }
+        }
+    }
+
     public void updateView(Game game){
         Board newBoard = game.returnBoard();
         this.game = game;

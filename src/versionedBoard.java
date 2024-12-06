@@ -1,5 +1,6 @@
 import java.security.KeyStore;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 public class versionedBoard extends Board {
     public int[][] scoreMultipliers;
@@ -14,6 +15,8 @@ public class versionedBoard extends Board {
                 scoreMultipliers[i][j] = 1;
             }
         }
+        this.setDoubles();
+        this.setTriples();
         this.initializeTripleWordMultipliers();
         this.initializeDoubleWordMultipliers();
     }
@@ -111,26 +114,57 @@ public class versionedBoard extends Board {
          }
     }
 
-    public void printBoard(){
-        for(int i = 0; i < scoreMultipliers.length; i++){
-            for(int j = 0; j < scoreMultipliers[i].length; j++){
-                System.out.print(scoreMultipliers[i][j] + "|");
+    public int returnScore(int row, int col) {
+        return scoreMultipliers[row][col];
+    }
+
+    public boolean tripleWord(int row, int col) {
+        Coordinate coordinate = new Coordinate(row, col);
+        for(Coordinate c: wordMultipliers.keySet()){
+            if(c.equals(coordinate) && wordMultipliers.get(c).equals(3)){
+                return true;
             }
-            System.out.println();
+        }
+        return false;
+    }
+
+    public boolean doubleWord(int row, int col) {
+        Coordinate coordinate = new Coordinate(row, col);
+        for(Coordinate c: wordMultipliers.keySet()){
+            if(c.equals(coordinate) && wordMultipliers.get(c).equals(2)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void initializeDoublesFromArray(ArrayList<Coordinate> coordinates){
+        for(Coordinate c: coordinates){
+            scoreMultipliers[c.row][c.col] = 2;
         }
     }
 
-    public void printMultipliers(){
-        for(HashMap.Entry<Coordinate, Integer> entry: wordMultipliers.entrySet()){
-            System.out.println(entry.getKey() + "|" + entry.getValue());
+    public void initializeTriplesFromArray(ArrayList<Coordinate> coordinates){
+        for(Coordinate c: coordinates){
+            scoreMultipliers[c.row][c.col] = 2;
+        }
+    }
+
+    public void initializeDoubleWordsFromArray(ArrayList<Coordinate> coordinates){
+        for (Coordinate c: coordinates){
+            wordMultipliers.put(new Coordinate(c.row, c.col), 2);
+        }
+    }
+
+    public void initializeTripleWordsFromArray(ArrayList<Coordinate> coordinates){
+        for (Coordinate c: coordinates){
+            wordMultipliers.put(new Coordinate(c.row, c.col), 3);
         }
     }
 
     public static void main(String[] args) {
         versionedBoard board = new versionedBoard();
-        board.setDoubles();
-        board.setTriples();
+        System.out.println(board.tripleWord(0,0));
         board.printBoard();
-        board.printMultipliers();
     }
 }

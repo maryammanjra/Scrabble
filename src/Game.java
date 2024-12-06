@@ -1,13 +1,11 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Scanner;
 
 public class Game implements Serializable {
     ArrayList<Player> players;
     Bag bag;
     Dictionary dictionary;
-    Board board;
+    versionedBoard board;
     Verifier verifier;
 
 
@@ -25,7 +23,7 @@ public class Game implements Serializable {
     public Game() throws IOException {
         players = new ArrayList<>();
         bag = new Bag();
-        board = new Board();
+        board = new versionedBoard();
         dictionary = new Dictionary();
         scorelessTurns = 0;
         views = new ArrayList<>();
@@ -46,6 +44,7 @@ public class Game implements Serializable {
     }
 
     public void gameStarted() {
+        views.get(0).setDoubleAndTriples(board);
         currentPlayer = players.get(0);
         indexOfCurrentPlayer = 0;
         for (View view : views) {
@@ -136,7 +135,7 @@ public class Game implements Serializable {
                         currentPlayer.getRack().addTile(bag);
                     }
                 }
-                int addToScore = verifier.computeScore() + adjacencyScores;
+                int addToScore = verifier.computeScoreVersionedBoard(board) + adjacencyScores;
                 currentPlayer.addToScore(addToScore);
                 views.get(0).scoreUpdated(currentPlayer.getScore());
             }
@@ -178,7 +177,8 @@ public class Game implements Serializable {
                 invalidOneLetter = true;
             }
             else{
-                adjacencyScores += verifierH.computeScore() + verifierV.computeScore();
+                adjacencyScores += verifierH.computeScoreVersionedBoard(board) +
+                        verifierV.computeScoreVersionedBoard(board);
             }
         }
         else if(horizontalWord != null){
@@ -187,7 +187,7 @@ public class Game implements Serializable {
                 invalidOneLetter = true;
             }
             else{
-                adjacencyScores += verifierH.computeScore();
+                adjacencyScores += verifierH.computeScoreVersionedBoard(board);
             }
         }
         else if(verticalWord != null){
@@ -196,7 +196,7 @@ public class Game implements Serializable {
                 invalidOneLetter = true;
             }
             else{
-                adjacencyScores += verifierV.computeScore();
+                adjacencyScores += verifierV.computeScoreVersionedBoard(board);
             }
         }
 
@@ -223,7 +223,7 @@ public class Game implements Serializable {
                return false;
            }
            else{
-               adjacencyScores += verifierV.computeScore();
+               adjacencyScores += verifierV.computeScoreVersionedBoard(board);
                return true;
            }
        }
@@ -246,7 +246,7 @@ public class Game implements Serializable {
                 return false;
             }
             else{
-                adjacencyScores += verifierH.computeScore();
+                adjacencyScores += verifierH.computeScoreVersionedBoard(board);
                 return true;
             }
         }

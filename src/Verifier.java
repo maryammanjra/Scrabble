@@ -83,6 +83,22 @@ public class Verifier implements Serializable {
         return score;
     }
 
+    public int computeScoreVersionedBoard(versionedBoard board){
+        int score = 0;
+        for(Move move : checkMoves) {
+            score += tileScores.get(move.getC()) * board.returnScore(move.getRow(), move.getCol());
+        }
+        for(Move move: checkMoves) {
+            if(board.doubleWord(move.getRow(), move.getCol())) {
+                score *= 2;
+            }
+            if(board.tripleWord(move.getRow(), move.getCol())) {
+                score *= 3;
+            }
+        }
+        return score;
+    }
+
     public int getTileScore(char c){
         return tileScores.get(c);
     }
