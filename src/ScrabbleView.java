@@ -17,10 +17,10 @@ public class ScrabbleView extends JFrame implements View{
         this.controller = new Controller(game, this);
 
         buttons = new JButton[15][15];
-        rackButtons = new JButton[11];
+        rackButtons = new JButton[14];
         Container contentPane = this.getContentPane();
         contentPane.setBackground(boardColour);
-        this.setSize(615, 500);
+        this.setSize(715, 515);
         this.setLayout(new BorderLayout());
 
         JPanel boardPanel = new JPanel();
@@ -88,19 +88,33 @@ public class ScrabbleView extends JFrame implements View{
             }
         }
 
-        for(int i = 0; i < 8; i++){
-            rackButtons[i].addActionListener(controller);
-        }
 
         rackButtons[8] = new JButton("Score: ");
         rackButton.add(rackButtons[8]);
+
         rackButtons[9] = new JButton("Pass");
         rackButton.add(rackButtons[9]);
         rackButtons[9].setActionCommand("Pass");
-        rackButtons[9].addActionListener(controller);
+
         rackButtons[10] = new JButton("Undo");
         rackButton.add(rackButtons[10]);
         rackButtons[10].setActionCommand("Undo");
+
+        rackButtons[11] = new JButton("Redo");
+        rackButton.add(rackButtons[11]);
+        rackButtons[11].setActionCommand("Redo");
+
+        rackButtons[12] = new JButton("Save");
+        rackButton.add(rackButtons[12]);
+        rackButtons[12].setActionCommand("Save");
+
+        rackButtons[13] = new JButton("Load");
+        rackButton.add(rackButtons[13]);
+        rackButtons[13].setActionCommand("Load");
+
+        for(int i = 0; i < 14; i++){
+            rackButtons[i].addActionListener(controller);
+        }
 
         game.gameStarted();
         JOptionPane.showMessageDialog(rootPane, "Place first letter in the middle of the board", "Scrabble", JOptionPane.PLAIN_MESSAGE);
@@ -139,6 +153,19 @@ public class ScrabbleView extends JFrame implements View{
     public void removeTile(int row, int column){
         buttons[row][column].setText(" ");
         buttons[row][column].setActionCommand(row + "." + column);
+    }
+
+    public void updateRack(Rack rack){
+        int i = 0;
+        for(Tile t: rack.getRack()){
+            rackButtons[i].setText(t.toString());
+            rackButtons[i].setActionCommand(t.toString());
+            i++;
+        }
+        if(i < 7){
+            rackButtons[i].setText(" ");
+            rackButtons[i].setActionCommand(" ");
+        }
     }
 
     public static void main(String[] args) throws IOException {

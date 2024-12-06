@@ -10,11 +10,16 @@ public class Verifier {
     public Verifier(ArrayList<Move> checkMoves) {
         this.checkMoves = checkMoves;
         this.tileScores = new HashMap<>();
+        this.initializeScores();
+    }
+
+    public Verifier(){
+        this.tileScores = new HashMap<>();
+        this.initializeScores();
     }
 
     public void sortList(){
         Collections.sort(checkMoves);
-        initializeScores();
     }
 
     public void initializeScores(){
@@ -75,6 +80,10 @@ public class Verifier {
             score += tileScores.get(move.getC());
         }
         return score;
+    }
+
+    public int getTileScore(char c){
+        return tileScores.get(c);
     }
 
 }

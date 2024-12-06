@@ -16,6 +16,7 @@ public class Game {
     int addToScore, adjacencyScores;
     ArrayList<View> views;
     ArrayList<Move> currentPlayersMoves;
+    ArrayList<Move> undoneMoves;
 
     ArrayList<Tile> playerPlacedTiles;
     Tile tileToPlace;
@@ -58,7 +59,6 @@ public class Game {
         }
     }
 
-
     public void firstTurn() {
         board.firstTurn(tileToPlace, 7, 7);
 
@@ -70,7 +70,6 @@ public class Game {
 
     public void anotherTurn(int row, int column) {
         if (board.addTile(tileToPlace, row, column)) {
-            System.out.println(tileToPlace.getCharacter());
             currentPlayersMoves.add(new Move(row, column, tileToPlace.getCharacter()));
 
             for (View view : views) {
@@ -254,5 +253,31 @@ public class Game {
             return true;
         }
     }
+
+    public void undo(){
+        undoneMoves = new ArrayList<>();
+        if(!currentPlayersMoves.isEmpty()){
+           Move moveToUndo = currentPlayersMoves.get(currentPlayersMoves.size()-1);
+           views.get(0).removeTile(moveToUndo.getRow(),moveToUndo.getCol());
+           currentPlayer.getRack().returnToRack(board.removeTile(moveToUndo.getRow(),moveToUndo.getCol()));
+           views.get(0).updateRack(currentPlayer.getRack());
+           undoneMoves.add(moveToUndo);
+           currentPlayersMoves.remove(moveToUndo);
+        }
+    }
+
+    public void redo(){
+        Verifier verifier = new Verifier();
+        if(!undoneMoves.isEmpty()){
+            Move moveToRedo = undoneMoves.get(undoneMoves.size()-1);
+            views.get(0).tilePlaced(moveToRedo.getRow(), moveToRedo.getCol(), moveToRedo.getC());
+            currentPlayer.getRack().playTile(moveToRedo.getC());
+            views.get(0).updateRack(currentPlayer.getRack());
+            board.addTile(new Tile(moveToRedo.getC(), verifier.getTileScore(moveToRedo.getC())), moveToRedo.getRow(), moveToRedo.getCol());
+            undoneMoves.remove(moveToRedo);
+            currentPlayersMoves.add(moveToRedo);
+        }
+    }
+
 }
 

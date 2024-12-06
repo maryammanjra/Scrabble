@@ -34,5 +34,11 @@ public class Controller implements ActionListener {
         else if(e.getActionCommand() == "Pass"){
             game.playerSwitched();
         }
+        else if(e.getActionCommand() == "Undo"){
+            game.undo();
+        }
+        else if(e.getActionCommand() == "Redo"){
+            game.redo();
+        }
     }
 }

@@ -6,7 +6,7 @@ public class Board {
     private Tile[][] tiles;
 
 
-    public Board () throws IOException {
+    public Board () {
         tiles = new Tile[15][15];
     }
 
@@ -14,8 +14,6 @@ public class Board {
         int i = row;
         int j = column;
 
-        //Replace the multiple if statements later, but you can only add beside a tile already on the board unless the game just
-        //started
         if(i < 14 && j < 14){
             if((tiles[i][j] == null && tiles[i-1][j] != null) || (tiles[i][j] == null && tiles[i+1][j] != null) ||
                     (tiles[i][j] == null && tiles[i][j-1] != null) || (tiles[i][j] == null && tiles[i][j+1] != null)) {
@@ -128,10 +126,6 @@ public class Board {
         Tile tile = tiles[row][column];
         tiles[row][column] = null;
         return tile;
-    }
-
-    public boolean isEmpty(int row, int col){
-        return tiles[row][col] == null;
     }
 
     public boolean checkAdjacentVertical(int row, int col){
