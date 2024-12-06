@@ -119,6 +119,10 @@ public class ScrabbleView extends JFrame implements View, Serializable {
         }
 
         game.gameStarted();
+        int customBoard = JOptionPane.showConfirmDialog(null, "Load a custom board?", "Custom configuration", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null);
+        if(customBoard == 0){
+            game.customBoard();
+        }
         JOptionPane.showMessageDialog(rootPane, "Place first letter in the middle of the board", "Scrabble", JOptionPane.PLAIN_MESSAGE);
     }
 
@@ -191,12 +195,15 @@ public class ScrabbleView extends JFrame implements View, Serializable {
                 else if(board.tripleWord(i, j)){
                     buttons[i][j].setText("TW");
                 }
+                else if(board.returnScore(i,j) == 1 && board.getTile(i,j) == null){
+                    buttons[i][j].setText(" ");
+                }
             }
         }
     }
 
     public void updateView(Game game){
-        Board newBoard = game.returnBoard();
+        versionedBoard newBoard = game.returnBoard();
         this.game = game;
         for(int i = 0; i < 15; i++){
             for(int j = 0; j < 15; j++){
@@ -213,6 +220,7 @@ public class ScrabbleView extends JFrame implements View, Serializable {
         }
         this.updateRack(game.getCurrentPlayer().getRack());
         this.scoreUpdated(game.getCurrentPlayer().getScore());
+        this.setDoubleAndTriples(game.returnBoard());
         game.addView(this);
     }
 

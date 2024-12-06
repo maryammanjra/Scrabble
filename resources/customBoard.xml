@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customBoard>
+    <doubleScores>
+        <Coordinate>6,3</Coordinate>
+        <Coordinate>2,3</Coordinate>
+        <Coordinate>1,3</Coordinate>
+    </doubleScores>
+    <tripleScores>
+        <Coordinate>5,2</Coordinate>
+        <Coordinate>6,4</Coordinate>
+        <Coordinate>2,8</Coordinate>
+    </tripleScores>
+    <doubleWord>
+        <Coordinate>2,2</Coordinate>
+    </doubleWord>
+    <tripleWord>
+        <Coordinate>14,14</Coordinate>
+    </tripleWord>
+</customBoard>

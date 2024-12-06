@@ -1,4 +1,6 @@
-public class Coordinate implements Comparable<Coordinate> {
+import java.io.Serializable;
+
+public class Coordinate implements Comparable<Coordinate>, Serializable {
 
 
     int row;

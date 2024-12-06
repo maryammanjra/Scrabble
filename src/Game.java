@@ -23,7 +23,7 @@ public class Game implements Serializable {
     public Game() throws IOException {
         players = new ArrayList<>();
         bag = new Bag();
-        board = new versionedBoard();
+        board = new versionedBoard(true);
         dictionary = new Dictionary();
         scorelessTurns = 0;
         views = new ArrayList<>();
@@ -31,6 +31,20 @@ public class Game implements Serializable {
         currentPlayersMoves = new ArrayList<>();
         addToScore = 0;
         adjacencyScores = 0;
+    }
+
+    public void customBoard(){
+        try{
+            customBoardParser customBoard = new customBoardParser("./resources/customBoard.xml");
+            customBoard.importFromXML();
+            board = customBoard.getBoard();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        System.out.println("Print board in game class:");
+        board.printBoard();
+        views.get(0).setDoubleAndTriples(board);
     }
 
     public void addView(View v) {
@@ -286,7 +300,7 @@ public class Game implements Serializable {
 
     public void serializeGame(String fileName){
         try{
-            FileOutputStream fileOutputStream = new FileOutputStream(fileName + ".txt");
+            FileOutputStream fileOutputStream = new FileOutputStream("./resources/" + fileName + ".txt");
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(this);
             objectOutputStream.close();
@@ -298,7 +312,7 @@ public class Game implements Serializable {
 
     public static Game deserializeGame(String fileName){
         try{
-            FileInputStream fileInputStream = new FileInputStream(fileName + ".txt");
+            FileInputStream fileInputStream = new FileInputStream("./resources/" + fileName + ".txt");
             ObjectInputStream objectInput = new ObjectInputStream(fileInputStream);
             try{
                 Game reloadedGame = (Game)(objectInput.readObject());
@@ -319,7 +333,7 @@ public class Game implements Serializable {
         return currentPlayer;
     }
 
-    public Board returnBoard(){
+    public versionedBoard returnBoard(){
         return board;
     }
 

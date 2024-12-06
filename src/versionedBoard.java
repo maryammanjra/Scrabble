@@ -1,12 +1,13 @@
+import java.io.Serializable;
 import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.ArrayList;
 
-public class versionedBoard extends Board {
+public class versionedBoard extends Board implements Serializable {
     public int[][] scoreMultipliers;
     HashMap<Coordinate, Integer> wordMultipliers;
 
-    public versionedBoard() {
+    public versionedBoard(boolean originalBoard) {
         super();
         scoreMultipliers = new int[15][15];
         wordMultipliers = new HashMap<>();
@@ -15,10 +16,12 @@ public class versionedBoard extends Board {
                 scoreMultipliers[i][j] = 1;
             }
         }
-        this.setDoubles();
-        this.setTriples();
-        this.initializeTripleWordMultipliers();
-        this.initializeDoubleWordMultipliers();
+        if(originalBoard) {
+            this.setDoubles();
+            this.setTriples();
+            this.initializeTripleWordMultipliers();
+            this.initializeDoubleWordMultipliers();
+        }
     }
 
     public void setDoubles(){
@@ -162,8 +165,17 @@ public class versionedBoard extends Board {
         }
     }
 
+    public void printBoard(){
+        for(int i = 0; i < 15; i++){
+            for(int j = 0; j < 15; j++){
+                System.out.print(scoreMultipliers[i][j] + "|");
+            }
+            System.out.println();
+        }
+    }
+
     public static void main(String[] args) {
-        versionedBoard board = new versionedBoard();
+        versionedBoard board = new versionedBoard(true);
         System.out.println(board.tripleWord(0,0));
         board.printBoard();
     }
